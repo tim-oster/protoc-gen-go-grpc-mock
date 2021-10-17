@@ -1,4 +1,4 @@
-module go-grpc-mock
+module github.com/tim-oster/protoc-gen-go-grpc-mock
 
 go 1.14
 
