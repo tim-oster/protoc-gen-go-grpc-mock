@@ -2,9 +2,10 @@ package main
 
 import (
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/types/pluginpb"
 )
 
-// inspiration from: https://github.com/golang/protobuf/blob/master/internal/gengogrpc/grpc.go
+// inspired by: https://github.com/golang/protobuf/blob/master/internal/gengogrpc/grpc.go
 
 const (
 	fmtPackage      = protogen.GoImportPath("fmt")
@@ -27,6 +28,8 @@ func main() {
 			}
 			generateFile(gen, f)
 		}
+
+		gen.SupportedFeatures |= uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
 		return nil
 	})
 }
@@ -62,8 +65,9 @@ func generateService(g *protogen.GeneratedFile, service *protogen.Service) {
 	g.P()
 
 	for _, method := range service.Methods {
+		// TODO add support for client streams & bidi streams
 		if method.Desc.IsStreamingServer() {
-			generateServerStreamingMock(g, method)
+			generateServerStreamServerMock(g, method)
 			generateClientStreamingMock(g, method)
 		}
 		generateClientMethodMock(g, method, clientName)
@@ -85,7 +89,7 @@ func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	return s
 }
 
-func generateServerStreamingMock(g *protogen.GeneratedFile, method *protogen.Method) {
+func generateServerStreamServerMock(g *protogen.GeneratedFile, method *protogen.Method) {
 	var (
 		respType    = g.QualifiedGoIdent(method.Output.GoIdent)
 		identErrorf = g.QualifiedGoIdent(fmtPackage.Ident("Errorf"))
