@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package bitlabs.survey_stats_v3;
+
+option go_package = "github.com/tim-oster/protoc-gen-go-grpc-mock/example;examplepb";
+
+service Service1 {
+  rpc Unary (Message) returns (Message);
+  rpc ServerStream (Message) returns (stream Message);
+  //rpc ClientStream (stream Message) returns (Message); // not supported
+  //rpc BidiStream (stream Message) returns (stream Message); // not supported
+}
+
+service Service2 {
+  rpc Unary (Message) returns (Message);
+}
+
+message Message {
+  int32 id = 1;
+  optional int32 optionals_are_supported = 2;
+}
